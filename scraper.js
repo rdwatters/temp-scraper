@@ -2,13 +2,13 @@
 
 //UNCOMMENT FOR NEWS RELEASES
 
-// const currentPageListing = "./scripts/news-releases.js"
-// const imageNewRootUrl = "https://www.uta.edu/news/news-releases/images/";
-// const imageDirForDownload = "news-releases-images/";
-// const pageListFilename = "news-releases-pages.json"
-// const dateElement = ".date-contact"
-// const bodyElement = ".news-body-section";
-// const imageListFilename = "news-releases-inline-images-listing.json";
+const currentPageListing = "./scripts/news-releases.js"
+const imageNewRootUrl = "https://www.uta.edu/news/news-releases/images/";
+const imageDirForDownload = "news-releases-images/";
+const pageListFilename = "news-releases-pages.json"
+const dateElement = ".date-contact"
+const bodyElement = ".news-body-section";
+const imageListFilename = "news-releases-inline-images-listing.json";
 
 //UNCOMMENT FOR ANNOUNCEMENTS
 
@@ -22,13 +22,13 @@
 
 //UNCOMMENT FOR UTA IN THE NEWS
 
-const currentPageListing = "./scripts/uta-in-the-news.js"
-const imageNewRootUrl = "https://www.uta.edu/news/uta-in-the-news/images/";
-const imageDirForDownload = "uta-in-the-news-images";
-const pageListFilename = "uta-in-the-news-pages.json";
-const dateElement = "#date-field";
-const bodyElement = "#in-the-news-body";
-const imageListFilename = "uta-in-the-news-inline-images-listing.json";
+// const currentPageListing = "./scripts/uta-in-the-news.js"
+// const imageNewRootUrl = "https://www.uta.edu/news/uta-in-the-news/images/";
+// const imageDirForDownload = "uta-in-the-news-images";
+// const pageListFilename = "uta-in-the-news-pages.json";
+// const dateElement = "#date-field";
+// const bodyElement = "#in-the-news-body";
+// const imageListFilename = "uta-in-the-news-inline-images-listing.json";
 
 
 let topics = require('./scripts/topics.js');
@@ -100,7 +100,8 @@ links.forEach(function (link) {
                         // grab all inline images
                         var oldInlineImgs = $(this).find('img');
                         // grab all the image/featherlight wrapper divs
-                        let featherLightWrappers = $(this).find('[class^="image-caption"]');
+                        let imageDivWrappers = $(this).find('[class^="image-caption"]');
+                        let featherLightAnchors = $(this).find('[data-featherlight]');
                         // iterate through all inline images
                         oldInlineImgs.each(function () {
                             // create abs src to push to allow for scraping all images at once
@@ -117,12 +118,19 @@ links.forEach(function (link) {
                             };
                             downloadImage.image(options);
                         });
-
-                        featherLightWrappers.each(function () {
+                        console.log(`No featherLights ${link} = ${featherLightAnchors.length}`);
+                        imageDivWrappers.each(function () {
                             var currentClassName = $(this).attr('class');
                             var innerImage = $(this).find('[data-featherlight]').html();
+                            if (innerImage == null){
+                                innerImage = $(this).find('img');
+                            }
                             var captionText = $(this).find('p').first().text();
-                            var caption = "<figcaption>" + captionText + "</figcaption>";
+                            var caption = "";
+                            // only add caption is there is one; otherwise omit <figcaption> element
+                            if(captionText.length > 0){
+                                caption = `<figcaption>${captionText}</figcaption>`;
+                            }
                             var newInnerContent = innerImage + caption;
                             var newFigure = "<figure class='" + currentClassName + "'>" + newInnerContent + "</figure>";
                             $(this).replaceWith(newFigure);
