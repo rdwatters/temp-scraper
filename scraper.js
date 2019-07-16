@@ -1,16 +1,31 @@
-// Following three blocks are set up for each news section
+// Alternative to Axios:
+//https://medium.com/@chriskimdevelop/web-scrape-with-node-js-and-cheerio-42a3123744f1
+// Or using Puppeteer
+// https://medium.com/swlh/an-introduction-to-web-scraping-with-puppeteer-3d35a51fdca0
+
+
+// Following three blocks are set up for each of the three news sections/news types
 
 //UNCOMMENT FOR NEWS RELEASES
 
-const currentPageListing = "./scripts/news-releases.js";
 const imageNewRootUrl = "/news/images/";
-const imageDirForDownload = "images-original/";
-const pageListFilename = "news-releases-pages.json"
+const imageDirForDownload = "images/";
 const dateElement = ".date-contact"
 const bodyElement = ".news-body-section";
 const imageListFilename = "news-releases-inline-images-listing.json";
-const download = require('download');
-const newRootRelativeBase = "/news/news-releases/"
+const newRootRelativeBase = "/news/news-releases/";
+
+// Different batches for news releases;updated to only include Sep 2016 to 2019-07-12
+// Uncomment individually
+const currentPageListing = "./scripts/news-releases-001-120.js";
+// const currentPageListing = "./scripts/news-releases-121-240.js";
+// const currentPageListing = "./scripts/news-releases-241-360.js";
+// const currentPageListing = "./scripts/news-releases-361-480.js";
+// const currentPageListing = "./scripts/news-releases-481-600.js";
+// const currentPageListing = "./scripts/news-releases-601-720.js";
+
+// const download = require('download');
+
 
 //UNCOMMENT FOR ANNOUNCEMENTS
 
@@ -33,10 +48,15 @@ const newRootRelativeBase = "/news/news-releases/"
 // const imageListFilename = "uta-in-the-news-inline-images-listing.json";
 
 
+const pageListFilename = currentPageListing.split("/").pop().split(".")[0] + "-page-data.json";
+const imageErrorsFileName = pageListFilename.replace("-page-data.json", "-image-errors.csv");
+const successPagesFileName = pageListFilename.replace("-page-data.json", "-success-pages.csv");
+
+
 let topics = require('./scripts/topics.js');
 let links = require(currentPageListing);
-// let links = require('./scripts/announcements.js');
-// let links = require('./scripts/uta-in-the-news.js');
+
+
 let convertToISO = require('./scripts/convertToISO');
 let axios = require('axios');
 let cheerio = require('cheerio');
@@ -49,7 +69,9 @@ let pageList = [];
 //create image list array
 let currentInlineImagesList = [];
 //create image error array
-let imageRelatedErrorsList = "Current Page, Current 'src' Attribute inside <img> tag, Change to This Filename before Uploading, New URL of Page\n";
+let imageRelatedErrorsList = "Current Page to Download From, Current 'src' Attribute inside <img> tag, Download and change to this Filename before Uploading to Sitecore, FYI, here is the URL of the New Page Where this image will be displayed\n";
+//Start empty string to be added to CSV for successful pages
+let successPages = "";
 
 
 links.forEach(function (link) {
@@ -58,6 +80,7 @@ links.forEach(function (link) {
             if (response.status === 200) {
                 const html = response.data;
                 const $ = cheerio.load(html);
+                
                 let oldURL = link;
                 var fullDateHeading = $(dateElement).first().text();
                 var fullDate = ""
@@ -94,11 +117,11 @@ links.forEach(function (link) {
                 var bodyCopy = "";
                 var shortDesc = "";
                 if (bodyElement == "#news-body") {
-                    bodyCopy = $("#news-body").html();
-                    shortDesc = bodCopy.text().substring(0,150);
+                    bodyCopy = $("#news-body").html().replace(/\n/g, '');
+                    shortDesc = $("#news-body").text().replace(/\n/g, '').substring(0, 150);
                 } else if (bodyElement == "#in-the-news-body") {
-                    bodyCopy = $("#in-the-news-body").html();
-                    shortDesc = bodCopy.text().substring(0, 150);
+                    bodyCopy = $("#in-the-news-body").html().replace(/\n/g, '');
+                    shortDesc = $("#in-the-news-body").text().replace(/\n/g, '').substring(0, 150);
                 } else {
                     let bodyCopies = $(".news-body-section");
                     // let bodyCopy = "";
@@ -114,7 +137,7 @@ links.forEach(function (link) {
                                 // create abs src to push to allow for scraping all images at once
                                 var currentAbsSrc = encodeURI($(this).attr('src').replace("../../../", "https://www.uta.edu/news/"));
                                 var currentInlineImgFilenameOnly = currentAbsSrc.split("/").pop();
-                                var newInlineImageFilenameOnly = decodeURI(currentInlineImgFilenameOnly).replace(/\s+/g, '-').toLowerCase().replace("jpg", "jpeg");
+                                var newInlineImageFilenameOnly = decodeURI(currentInlineImgFilenameOnly).replace(/\s+/g, '-').replace("_", "-").replace(/-{2,}/g, '-').toLowerCase().replace("jpg", "jpeg");
                                 var numberOfDots = newInlineImageFilenameOnly.split('.').length - 1;
                                 if (!(/jpg|png|jpeg/).test(newInlineImageFilenameOnly)) {
                                     newInlineImageFilenameOnly += ".jpeg"
@@ -123,8 +146,6 @@ links.forEach(function (link) {
                                 else if ((/jpg|png|jpeg/).test(newInlineImageFilenameOnly) && (numberOfDots > 1)) {
                                     var newInlineImageFilenameArray = newInlineImageFilenameOnly.split(".");
                                     var newInlineImageFileExtensionOnly = newInlineImageFilenameArray.pop();
-                                    // console.log("This is the newInlineImageFilenameArray now = " + newInlineImageFilenameArray);
-                                    // console.log("This is the newInlineImageFileExtensionOnly now = " + newInlineImageFileExtensionOnly);
                                     newInlineImageFilenameOnly = newInlineImageFilenameArray.join("").replace(".","-") + "." + newInlineImageFileExtensionOnly;
                                     console.log("NEW FILENAME = " + newInlineImageFilenameOnly);
                                 }
@@ -167,12 +188,13 @@ links.forEach(function (link) {
                                 $(this).replaceWith(newFigure);
                             });
                         }
-                        bodyCopy += $(this).html();
+                        bodyCopy += $(this).html().replace(/\n/g, '');
+                        shortDesc += $(this).text().replace(/\n/g, '');
+                        shortDesc = shortDesc.substring(0,150);
                         
                     });
                     
                 }
-                // shortDesc = bodyCopy.text().substring(0, 150);
 
                 pageList.push({
                     oldURL: oldURL,
@@ -186,13 +208,18 @@ links.forEach(function (link) {
                     shortDescription: shortDesc,
                     body: bodyCopy
                 });
+                successPages += link + ",\n";
             }
             fs.writeFile(pageListFilename, JSON.stringify(pageList, null, 4),
                 (err) => console.log('Page content success'));
             fs.writeFile(imageListFilename, JSON.stringify(currentInlineImagesList, null, 4),
                 (err) => console.log('Current image success'));
-            fs.writeFile("image-errors.csv", imageRelatedErrorsList,
-                (err) => console.log('Undownloadable image added to image-errors.csv'));
+            fs.writeFile(imageErrorsFileName, imageRelatedErrorsList,
+                (err) => console.log('Undownloadable image added'));
+            fs.writeFile(successPagesFileName, successPages,
+                (err) => console.log('Link added'));
         })
+        
 });
+// console.log(links);
 
