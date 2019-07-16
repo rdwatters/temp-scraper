@@ -10,7 +10,7 @@
 
 const imageNewRootUrl = "/news/images/";
 const imageDirForDownload = "images/";
-const dateElement = ".date-contact"
+const dateElement = ".date-contact";
 const bodyElement = ".news-body-section";
 const imageListFilename = "news-releases-inline-images-listing.json";
 const newRootRelativeBase = "/news/news-releases/";
