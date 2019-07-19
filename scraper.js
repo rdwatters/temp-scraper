@@ -17,19 +17,17 @@ const newRootRelativeBase = "/news/news-releases/";
 
 // Different batches for news releases;updated to only include Sep 2016 to 2019-07-12
 // Uncomment individually
-const currentPageListing = "./scripts/news-releases-001-120.js";
-// const currentPageListing = "./scripts/news-releases-121-240.js";
-// const currentPageListing = "./scripts/news-releases-241-360.js";
-// const currentPageListing = "./scripts/news-releases-361-480.js";
-// const currentPageListing = "./scripts/news-releases-481-600.js";
-// const currentPageListing = "./scripts/news-releases-601-720.js";
-
-// const download = require('download');
-
+const currentPageListing = "./scripts/news-releases-001-100.js";
+// const currentPageListing = "./scripts/news-releases-101-200.js";
+// const currentPageListing = "./scripts/news-releases-201-300.js";
+// const currentPageListing = "./scripts/news-releases-301-400.js";
+// const currentPageListing = "./scripts/news-releases-401-500.js";
+// const currentPageListing = "./scripts/news-releases-501-600.js";
+// const currentPageListing = "./scripts/news-releases-601-end.js";
 
 //UNCOMMENT FOR ANNOUNCEMENTS
 
-// const currentPageListing = "./scripts/announcements.js"
+
 // const imageNewRootUrl = "/news/images/";
 // const imageDirForDownload = "announcements-images";
 // const pageListFilename = "announcements-pages.json";
@@ -37,15 +35,23 @@ const currentPageListing = "./scripts/news-releases-001-120.js";
 // const bodyElement = "#news-body";
 // const imageListFilename = "announcements-inline-images-listing.json";
 
+// const currentPageListing = "./scripts/announcements-001-100.js";
+// const currentPageListing = "./scripts/announcements-101-end.js";
+
 //UNCOMMENT FOR UTA IN THE NEWS
 
-// const currentPageListing = "./scripts/uta-in-the-news.js"
+
 // const imageNewRootUrl = "/news/images/";
 // const imageDirForDownload = "uta-in-the-news-images";
 // const pageListFilename = "uta-in-the-news-pages.json";
 // const dateElement = "#date-field";
 // const bodyElement = "#in-the-news-body";
 // const imageListFilename = "uta-in-the-news-inline-images-listing.json";
+
+// const currentPageListing = "./scripts/uta-in-the-news-001-100.js";
+// const currentPageListing = "./scripts/uta-in-the-news-101-200.js";
+// const currentPageListing = "./scripts/uta-in-the-news-201-300.js";
+// const currentPageListing = "./scripts/uta-in-the-news-301-end.js";
 
 
 const pageListFilename = currentPageListing.split("/").pop().split(".")[0] + "-page-data.json";
@@ -135,7 +141,7 @@ links.forEach(function (link) {
                         if (oldInlineImgs.length > 0) {
                             oldInlineImgs.each(function () {
                                 // create abs src to push to allow for scraping all images at once
-                                var currentAbsSrc = encodeURI($(this).attr('src').replace("../../../", "https://www.uta.edu/news/"));
+                                var currentAbsSrc = encodeURI($(this).attr('src').replace("../../../", "http://www.uta.edu/news/"));
                                 var currentInlineImgFilenameOnly = currentAbsSrc.split("/").pop();
                                 var newInlineImageFilenameOnly = decodeURI(currentInlineImgFilenameOnly).replace(/\s+/g, '-').replace("_", "-").replace(/-{2,}/g, '-').toLowerCase().replace("jpg", "jpeg");
                                 var numberOfDots = newInlineImageFilenameOnly.split('.').length - 1;

@@ -1,6 +1,5 @@
 let links = [
 
-"https://www.uta.edu/news/releases/2014/01/bowling-nano-measurement.php",
 "https://www.uta.edu/news/releases/2016/09/abolmaali-txdot-pipes.php",
 "https://www.uta.edu/news/releases/2016/09/bionorthTX%20release%20announcement.php",
 "https://www.uta.edu/news/releases/2016/09/Chug%20water%20Eagle%20Ford%20Shale.php",
@@ -100,28 +99,8 @@ let links = [
 "https://www.uta.edu/news/releases/2017/03/Bernard%20Harris%20announcement.php",
 "https://www.uta.edu/news/releases/2017/03/CAPPA-tiny-houses.php",
 "https://www.uta.edu/news/releases/2017/03/fair-housing-assessment.php",
-"https://www.uta.edu/news/releases/2017/03/glass-art-sale-2017.php",
-"https://www.uta.edu/news/releases/2017/03/Intask%20Siemens%20release.php",
-"https://www.uta.edu/news/releases/2017/03/Kubinak%20release%20Immunology.php",
-"https://www.uta.edu/news/releases/2017/03/letia-blanco-patent.php",
-"https://www.uta.edu/news/releases/2017/03/Lockheed-Martin-Career-Development-Center.php",
-"https://www.uta.edu/news/releases/2017/03/Math-release-imaging.php",
-"https://www.uta.edu/news/releases/2017/03/Mathematical%20modelling%20dropout%20rates.php",
-"https://www.uta.edu/news/releases/2017/03/military-hall-of-honor.php",
-"https://www.uta.edu/news/releases/2017/03/Mydlarz%20Coral%20Reefs.php",
-"https://www.uta.edu/news/releases/2017/03/Schug-Earthday-drilling.php",
-"https://www.uta.edu/news/releases/2017/03/sidley-scholars.php",
-"https://www.uta.edu/news/releases/2017/03/transfer-honor-roll.php",
-"https://www.uta.edu/news/releases/2017/03/us-news-grad-rankings.php",
-"https://www.uta.edu/news/releases/2017/03/vickery-meadow-plan.php",
-"https://www.uta.edu/news/releases/2017/04/Ben%20Jones%20IceCube%20Award%20APS.php",
-"https://www.uta.edu/news/releases/2017/04/Chowdhury%20Emerging%20Investigators.php",
-"https://www.uta.edu/news/releases/2017/04/garrigus-nhcfellow.php",
-"https://www.uta.edu/news/releases/2017/04/haykowsky-grant.php",
-"https://www.uta.edu/news/releases/2017/04/health-divided-sledge.php",
-"https://www.uta.edu/news/releases/2017/04/heroes-of-the-dorm.php"
+"https://www.uta.edu/news/releases/2017/03/glass-art-sale-2017.php"
 
- 
 ]
 
 module.exports = links;
