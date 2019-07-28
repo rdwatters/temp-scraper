@@ -8,12 +8,12 @@
 
 //UNCOMMENT FOR NEWS RELEASES
 
-// const imageNewRootUrl = "/news/images/";
-// const imageDirForDownload = "images/";
-// const dateElement = ".date-contact";
-// const bodyElement = ".news-body-section";
-// const imageListFilename = "news-releases-inline-images-listing.json";
-// const newRootRelativeBase = "/news/news-releases/";
+const imageNewRootUrl = "/news/images/";
+const imageDirForDownload = "images/";
+const dateElement = ".date-contact";
+const bodyElement = ".news-body-section";
+const imageListFilename = "news-releases-inline-images-listing.json";
+const newRootRelativeBase = "/news/news-releases/";
 
 // Different batches for news releases;updated to only include Sep 2016 to 2019-07-12
 // Uncomment individually
@@ -24,7 +24,7 @@
 // const currentPageListing = "./scripts/news-releases-401-500.js";
 // const currentPageListing = "./scripts/news-releases-501-600.js";
 // const currentPageListing = "./scripts/news-releases-601-end.js";
-// const currentPageListing = "./scripts/news-releases-missed-pages.js";
+const currentPageListing = "./scripts/news-releases-missed-pages.js";
 
 //UNCOMMENT FOR ANNOUNCEMENTS
 
@@ -39,11 +39,11 @@
 
 //UNCOMMENT FOR UTA IN THE NEWS
 
-const imageNewRootUrl = "/news/images/";
-const imageDirForDownload = "uta-in-the-news-images";
-const dateElement = "#date-field";
-const bodyElement = "#in-the-news-body";
-const imageListFilename = "uta-in-the-news-inline-images-listing.json";
+// const imageNewRootUrl = "/news/images/";
+// const imageDirForDownload = "uta-in-the-news-images";
+// const dateElement = "#date-field";
+// const bodyElement = "#in-the-news-body";
+// const imageListFilename = "uta-in-the-news-inline-images-listing.json";
 
 // const currentPageListing = "./scripts/uta-in-the-news-001-100.js";
 // const currentPageListing = "./scripts/uta-in-the-news-101-200.js";
@@ -87,38 +87,57 @@ links.forEach(function (link) {
                 
                 let oldURL = link;
                 var fullDateHeading = $(dateElement).first().text();
-                var fullDate = ""
+                var fullDate = "";
+                //set default value for media contact
+                var mediaCt = "UT Arlington Media Relations";
+                //if the date heading includes the middle dot, it's a news release
                 if (fullDateHeading.indexOf("•") > 0) {
                     fullDate = fullDateHeading.split(" • ")[0];
+                    //grab the text for the media contact; this may still be "UT Arlington Media Relations"
+                    //or it may be another person's name
+                    mediaCt = fullDateHeading.split(" • ")[1].split("Media Contact:")[1];
+                    if(mediaCt !== undefined){
+                        mediaCt = mediaCt.trim();
+                    }
                 }
-                //if it's an announcement page, doesn't currently include author name, 
-                //so skip reference to "•"
+                //announcement pages do not currently include author name, 
+                //so skip reference to "•" and keep media contact text to default value
                 else if (link.includes("announcements")) {
                     fullDate = $(dateElement).text();
+                //if its of the 'UTA in the News' news type, it uses a different selector
+                //note UTA in the News does not have specific authors, so keep media contact text to default
                 } else if (link.includes("in-the-news")) {
                     fullDate = $("#date-field").text();
                 } else {
                     fullDate = $("#news-header > .floatleft").first().text();
                 }
+                //convert data to ISO YYYY-MM-DD using ISO function/module
                 let isoDate = convertToISO(fullDate);
+                //find and replace "-" with "/" to show new directory structure for articles based on pub date
                 let dateAsDirectories = isoDate.replace(/\-/g, "/");
+                //grab page title
                 let pageTitle = $('.page-title').text();
                 let newSlug = slugify(pageTitle, {
                     lower: true
                 });
-                newSlug = newSlug.replace(/'/g, '');
+                //hedge bets on slugify function and replace both single and double quotes
+                newSlug = newSlug.replace(/'/g, '').replace(/"/g, '');
+                //assign tag links to jquery object
                 let tagLinks = $('.tags a');
 
                 var tagArray = [];
                 if (tagLinks.length > 0) {
                     tagLinks.each(function (item) {
                         var theTag = $(this).text().toLowerCase();
+                        //check to see if tag matches current tag taxonomy for new site
                         if (topics.topicsTaxonomy.includes(theTag)) {
                             tagArray.push(theTag);
                         }
                     });
                 }
+                //create emtpy bodycopy string
                 var bodyCopy = "";
+                //create empty short description string
                 var shortDesc = "";
                 if (bodyElement == "#news-body") {
                     bodyCopy = $("#news-body").html().replace(/\n/g, '');
@@ -128,7 +147,6 @@ links.forEach(function (link) {
                     shortDesc = $("#in-the-news-body").text().replace(/\n/g, '').substring(0, 150);
                 } else {
                     let bodyCopies = $(".news-body-section");
-                    // let bodyCopy = "";
                     bodyCopies.each(function () {
                         // grab all inline images
                         var oldInlineImgs = $(this).find('img');
@@ -192,8 +210,8 @@ links.forEach(function (link) {
                                 $(this).replaceWith(newFigure);
                             });
                         }
-                        bodyCopy += $(this).html().replace(/\n/g, '');
-                        shortDesc += $(this).text().replace(/\n/g, '');
+                        bodyCopy += $(this).html();
+                        shortDesc += $(this).text().replace(/\n/, '');
                         shortDesc = shortDesc.substring(0,150);
                         
                     });
@@ -205,7 +223,7 @@ links.forEach(function (link) {
                     newSlug: newSlug,
                     pageTitle: pageTitle,
                     publishDate: isoDate,
-                    mediaContact: "UT Arlington Media Relations",
+                    mediaContact: mediaCt,
                     mediaContactURL: "/news/contact/",
                     topics: tagArray,
                     audience: ["media"],
@@ -225,5 +243,4 @@ links.forEach(function (link) {
         })
         
 });
-// console.log(links);
 
